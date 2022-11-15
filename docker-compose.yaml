@@ -10,4 +10,4 @@ services:
       MONGODB: ecommerse
       MONGOHOST: mongodb://localhost:27017 
     volumes:
-      - ./database:/data/db
+      - ../database:/data/db
