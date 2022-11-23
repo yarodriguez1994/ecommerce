@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, ID} from '@nestjs/graphql'; 
+import { Resolver, Query, Mutation, Args, ID, Subscription} from '@nestjs/graphql'; 
 import { UsersService } from '../../../application/create/users.create.service';
 import { User } from '../../entities/user.entity';
 import { CreateUserInput } from '../../dto/inputs/create-user.input';
@@ -8,12 +8,16 @@ import { UserEntity } from '../../../domain/user.entity';
 // import { UserOne } from '../../../application/findOne/user.findOne.service';
 import { ObjectId } from 'mongoose';
 import { UserUpdateService } from '../../../application/update/user.update.service'; 
-import { HttpCode, HttpStatus } from '@nestjs/common';
+import { HttpCode, HttpStatus, PayloadTooLargeException } from '@nestjs/common';
 import { UsersAll, UserOne, DeleteUserService } from '../../../application/index';
+import { PubSub } from 'graphql-subscriptions';
 
 
 @Resolver(() => User)
 export class UsersResolver {
+  
+  private pubSub = new PubSub();
+
   constructor(
     private readonly usersService: UsersService,
     private readonly usersAll: UsersAll,
@@ -48,7 +52,9 @@ export class UsersResolver {
   async createUser(
     @Args('createUserInput') createUserInput: CreateUserInput
   ): Promise<UserEntity>{
-     return await this.usersService.execute(createUserInput);
+    const newUSer = await this.usersService.execute(createUserInput);
+    this.pubSub.publish('UserAdded', { UserAdded:newUSer });
+    return newUSer;
      
   }
  
@@ -66,6 +72,14 @@ export class UsersResolver {
     @Args('id', { type: () => String }) id: string
   ){
     return await this.userDeleteService.execute(id);
+  }
+
+  @Subscription((returns) => User ,{
+    name:'UserAdded',
+    filter: (payload) => payload.UserAdded.email
+  }) 
+  eventUserCreated(){
+    return this.pubSub.asyncIterator('UserAdded');
   }
 
 }

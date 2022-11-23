@@ -14,6 +14,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     ConfigModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      subscriptions: {
+        'graphql-ws': true
+      },
       debug: false,
       playground: false,
       plugins: [

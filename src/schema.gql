@@ -40,3 +40,7 @@ input UpdateUserInput {
   gender: String
   id: String!
 }
+
+type Subscription {
+  UserAdded: User!
+}
