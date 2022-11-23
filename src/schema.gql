@@ -4,6 +4,7 @@
 
 type User {
   id: String!
+  uuid: String!
   firstname: String!
   lastname: String
   email: String!
@@ -13,22 +14,29 @@ type User {
 
 type Query {
   allUsers: [User!]!
-  user(id: Int!): User!
+  findOne(id: String!): User!
+  findByEmail(email: String!): User!
 }
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: Int!): User!
+  updateUser(id: String!, updateUserInput: UpdateUserInput!): User!
+  deleteUser(id: String!): User!
 }
 
 input CreateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  firstname: String!
+  lastname: String
+  email: String!
+  password: String!
+  gender: String!
 }
 
 input UpdateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  firstname: String
+  lastname: String
+  email: String
+  password: String
+  gender: String
+  id: String!
 }

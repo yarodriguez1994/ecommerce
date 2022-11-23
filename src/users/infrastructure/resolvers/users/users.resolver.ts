@@ -1,35 +1,71 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID} from '@nestjs/graphql'; 
 import { UsersService } from '../../../application/create/users.create.service';
-import { User } from '../../../entities/user.entity';
-import { CreateUserInput } from '../../../dto/inputs/create-user.input';
-import { UpdateUserInput } from '../../../dto/inputs/update-user.input';
+import { User } from '../../entities/user.entity';
+import { CreateUserInput } from '../../dto/inputs/create-user.input';
+import { UpdateUserInput } from '../../dto/inputs/update-user.input';
+import { UserEntity } from '../../../domain/user.entity';
+// import { UsersAll } from '../../../application/findAll/users.findAll.service';
+// import { UserOne } from '../../../application/findOne/user.findOne.service';
+import { ObjectId } from 'mongoose';
+import { UserUpdateService } from '../../../application/update/user.update.service'; 
+import { HttpCode, HttpStatus } from '@nestjs/common';
+import { UsersAll, UserOne, DeleteUserService } from '../../../application/index';
+
 
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
-
-  @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.usersService.create(createUserInput);
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly usersAll: UsersAll,
+    private readonly userOne: UserOne,
+    private readonly userUpdateService: UserUpdateService,
+    private readonly userDeleteService: DeleteUserService,
+  ){}
+  
+  @Query( () => [User], { name: 'allUsers' } )
+  async findAll(): Promise<UserEntity[]> {
+    return await this.usersAll.execute();
   }
 
-  @Query(() => [User], { name: 'allUsers' })
-  findAll(): User [] {
-    return this.usersService.findAll();
+  @Query( () => User, { name: 'findOne' } )
+  async findOne(
+    @Args('id',{type: () => String } ) id:string
+  ): Promise<UserEntity>{
+    const user = await this.userOne.execute(id);
+    return user;
   }
 
-  @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.usersService.findOne(id);
+  @Query( () => User, { name: 'findByEmail' } )
+  async findByEmail(
+    @Args('email',{type: () => String } ) email:string
+  ): Promise<UserEntity>{
+    const user = await this.userOne.findByEmail(email);
+    return user;
   }
 
-  @Mutation(() => User)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.usersService.update(updateUserInput.id, updateUserInput);
+  @Mutation( () => User, {name:'createUser'} )
+  @HttpCode(HttpStatus.CREATED)
+  async createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput
+  ): Promise<UserEntity>{
+     return await this.usersService.execute(createUserInput);
+     
+  }
+ 
+  @Mutation(() => User, {name:'updateUser'})
+  async updateUser(
+    @Args('id') _id: string,
+    @Args('updateUserInput') updateUserInput: UpdateUserInput
+  ):Promise<UserEntity> {
+    return await this.userUpdateService.execute(_id,updateUserInput);
   }
 
-  @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
-    return this.usersService.remove(id);
+
+  @Mutation(() => User, {name:'deleteUser'} )
+  async removeUser(
+    @Args('id', { type: () => String }) id: string
+  ){
+    return await this.userDeleteService.execute(id);
   }
+
 }

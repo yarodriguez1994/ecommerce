@@ -5,18 +5,33 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [UsersModule,
+  imports: [
+    UsersModule,
+    ConfigModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
-    driver: ApolloDriver,
-    debug: false,
-    playground: false,
-    plugins: [
-      ApolloServerPluginLandingPageLocalDefault
-    ],
-    autoSchemaFile: join( process.cwd(), 'src/schema.gql'),
+      driver: ApolloDriver,
+      debug: false,
+      playground: false,
+      plugins: [
+        ApolloServerPluginLandingPageLocalDefault
+      ],
+      autoSchemaFile: join( process.cwd(), 'src/schema.gql'),
     }),
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: process.env.MONGODBHOST,
+      database: process.env.MONGODB_DATABASE,
+      port:27018,
+      entities: [ __dirname + '/**/*.entity{.ts,.js}',],
+      synchronize: true,
+      useUnifiedTopology: true,
+      useNewUrlParser: true
+    }),
+    
   ],
   controllers: [],
   providers: [],

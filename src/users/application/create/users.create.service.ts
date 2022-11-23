@@ -1,40 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { User } from 'src/users/entities/user.entity';
-import { CreateUserInput } from '../../dto/inputs/create-user.input';
-import { UpdateUserInput } from '../../dto/inputs/update-user.input';
+import { Injectable,Inject } from '@nestjs/common';
+import { UserEntity } from '../../domain/user.entity';
+import { UserRepository } from '../../domain/user.repository';
+import { CreateUserInput } from '../../infrastructure/dto/inputs/create-user.input';
+
 
 @Injectable()
 export class UsersService {
 
-  private user : User[] =[ 
-    {
-      id:1,
-      firstname:'Yilber',
-      lastname:'Rodriguez',
-      email:'yilber@kunturtech.com',
-      password:'12345',
-      gender:'M'
-      
-    }
-  ]
+  constructor(@Inject('IUserRepository') private readonly userRepository: UserRepository
+  ) {}
   
-  create(createUserInput: CreateUserInput) {
-    return 'This action adds a new user';
+  async execute(createUserInput: CreateUserInput): Promise<UserEntity>{
+
+    const createUser:UserEntity = UserEntity.create(
+      createUserInput.firstname,
+      createUserInput.lastname,
+      createUserInput.email,
+      createUserInput.password,
+      createUserInput.gender,
+    );
+    await this.userRepository.save(createUser);
+
+    return createUser;
   }
 
-  findAll() {
-    return this.user;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }

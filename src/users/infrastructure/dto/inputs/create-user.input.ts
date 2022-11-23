@@ -1,15 +1,9 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { IsNumber ,IsString, MaxLength, IsNotEmpty, IsEmail, MinLength} from 'class-validator';
-import { Entity, Column, ObjectIdColumn, ObjectID } from 'typeorm';
+import { InputType, Int, Field } from '@nestjs/graphql';
+import { IsNumber ,IsString, MaxLength, IsNotEmpty, IsEmail, MinLength, IsOptional} from 'class-validator';
 
-@ObjectType()
-@Entity()
-export class User {
-
-  @Field(() => String)
-  @IsNumber()
-  id: number;
-
+@InputType()
+export class CreateUserInput {
+    
   @Field(() => String)
   @IsString()
   @MaxLength(10)
@@ -19,7 +13,8 @@ export class User {
   @Field(() => String,{nullable:true})
   @IsString()
   @MaxLength(10)
-  lastname:string
+  @IsOptional()
+  lastname?:string
 
   @Field(() => String)
   @IsEmail()
@@ -36,6 +31,5 @@ export class User {
   @MaxLength(1)
   gender:string;
 
+  
 }
-
-
