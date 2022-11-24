@@ -8,6 +8,7 @@ import { UserRepositoryMongo } from './infrastructure/persistence/user.repositor
 import { UsersResolver } from './infrastructure/resolvers/users/users.resolver';
 import { UserUpdateService } from './application/update/user.update.service';
 import { DeleteUserService } from './application';
+import { PubSub } from 'graphql-subscriptions';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -15,6 +16,10 @@ import { DeleteUserService } from './application';
     {
       provide: 'IUserRepository',
       useClass: UserRepositoryMongo
+    },
+    {
+      provide:'PUB_SUB',
+      useValue: new PubSub(),
     },
     UsersResolver,
     UsersService,

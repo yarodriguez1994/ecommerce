@@ -7,8 +7,11 @@ import { CreateUserInput } from '../../infrastructure/dto/inputs/create-user.inp
 @Injectable()
 export class UserUpdateService{
 
-    constructor(@Inject('IUserRepository')
-        private readonly userRepository:UserRepository
+    constructor(
+        @Inject('IUserRepository') private readonly userRepository:UserRepository,
+        @Inject('PUB_SUB') private readonly pubSub,
+        
+
     ){}
 
     public async execute(_id:string,updateUserInput:UpdateUserInput): Promise<any>{
@@ -21,6 +24,8 @@ export class UserUpdateService{
             gender: updateUserInput.gender,
         }
         await this.userRepository.update(_id,updateUser);
+        this.pubSub.publish('UserUpdated', {UserUpdated:updateUser});
+
         return updateUser;
 
     }

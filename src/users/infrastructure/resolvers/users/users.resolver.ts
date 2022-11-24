@@ -4,21 +4,18 @@ import { User } from '../../entities/user.entity';
 import { CreateUserInput } from '../../dto/inputs/create-user.input';
 import { UpdateUserInput } from '../../dto/inputs/update-user.input';
 import { UserEntity } from '../../../domain/user.entity';
-// import { UsersAll } from '../../../application/findAll/users.findAll.service';
-// import { UserOne } from '../../../application/findOne/user.findOne.service';
-import { ObjectId } from 'mongoose';
 import { UserUpdateService } from '../../../application/update/user.update.service'; 
-import { HttpCode, HttpStatus, PayloadTooLargeException } from '@nestjs/common';
+import { HttpCode, HttpStatus, Inject } from '@nestjs/common';
 import { UsersAll, UserOne, DeleteUserService } from '../../../application/index';
-import { PubSub } from 'graphql-subscriptions';
 
 
 @Resolver(() => User)
 export class UsersResolver {
   
-  private pubSub = new PubSub();
+  // private pubSub = new PubSub();
 
   constructor(
+    @Inject('PUB_SUB') private readonly pubService,
     private readonly usersService: UsersService,
     private readonly usersAll: UsersAll,
     private readonly userOne: UserOne,
@@ -52,10 +49,9 @@ export class UsersResolver {
   async createUser(
     @Args('createUserInput') createUserInput: CreateUserInput
   ): Promise<UserEntity>{
-    const newUSer = await this.usersService.execute(createUserInput);
-    this.pubSub.publish('UserAdded', { UserAdded:newUSer });
-    return newUSer;
-     
+    return await this.usersService.execute(createUserInput);
+    // this.pubSub.publish('UserAdded', { UserAdded:newUser });
+    // this.pubService.publish('UserAdded', { UserAdded:newUser });
   }
  
   @Mutation(() => User, {name:'updateUser'})
@@ -76,10 +72,22 @@ export class UsersResolver {
 
   @Subscription((returns) => User ,{
     name:'UserAdded',
-    filter: (payload) => payload.UserAdded.email
+    filter : (payload) => payload,
   }) 
   eventUserCreated(){
-    return this.pubSub.asyncIterator('UserAdded');
+    // return this.pubSub.asyncIterator('UserAdded');
+    return this.pubService.asyncIterator('UserAdded');
+
+  }
+
+  @Subscription((returns) => User ,{
+    name:'UserDeleted',
+    filter : (payload) => payload,
+  }) 
+  eventDeleteUser(){
+    // return this.pubSub.asyncIterator('UserAdded');
+    return this.pubService.asyncIterator('UserDeleted');
+
   }
 
 }

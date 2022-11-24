@@ -8,7 +8,9 @@ import { ObjectId, Schema } from 'mongoose';
 export class  DeleteUserService{
 
     constructor(@Inject('IUserRepository')
-                private readonly userRepository:UserRepository
+                private readonly userRepository:UserRepository,
+                @Inject('PUB_SUB') private readonly pubSub,
+
                 ){}
 
     public async execute(id:string): Promise<any>{
@@ -16,11 +18,12 @@ export class  DeleteUserService{
         if ( findUser === null ) throw new Error(`User by id ${id} does not exist`);
         await this.userRepository.delete(id);
         
+        this.pubSub.publish('UserDeleted', {UserDeleted:{...findUser}});
+        
         return {...findUser};
        
     }
     
-
 }
 
 

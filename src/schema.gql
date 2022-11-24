@@ -43,4 +43,5 @@ input UpdateUserInput {
 
 type Subscription {
   UserAdded: User!
+  UserDeleted: User!
 }
