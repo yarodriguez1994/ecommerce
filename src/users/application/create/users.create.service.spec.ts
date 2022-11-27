@@ -23,6 +23,14 @@ describe('User', () => {
             }
           }
         },
+        {
+          provide: 'PUB_SUB',
+          useValue: {
+            publish: () => {
+              return
+            }
+          }
+        }
       ],
     }).compile();
 

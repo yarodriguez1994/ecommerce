@@ -2,10 +2,12 @@ import {v4 as uuidv4} from 'uuid';
 
 export interface UserPrimitives {
     id:string;
+    uuid:string;
     email:string;
     gender:string;
     firstname:string;
     lastname:string;
+    password:string;
 }
 
 
@@ -18,7 +20,7 @@ export class UserEntity {
     readonly password: string;
     readonly gender: string;
 
-    private constructor(id:uuidv4, firstName: string, lastName: string, email: string, password: string, gender: string ){
+    private constructor(firstName: string, lastName: string, email: string, password: string, gender: string, id?:uuidv4 ){
 
         this.uuid = id;
         this.firstname = firstName;
@@ -37,13 +39,27 @@ export class UserEntity {
 
         return {
             id: this.uuid,
-            email: this.firstname,
-            gender: this.firstname,
+            uuid:this.uuid,
+            email: this.email,
+            gender: this.gender,
             firstname: this.firstname,
-            lastname: this.firstname,
-
+            lastname: this.lastname,
+            password: this.password,
         }
 
     }
+
+    // public static objectUser(attributes):UserPrimitives {
+
+    //     return {
+    //         id: attributes.id ,
+    //         email: attributes.email,
+    //         gender: attributes.gender,
+    //         firstname: attributes.firstname,
+    //         lastname: attributes.lastname,
+    //     }
+
+    // }
+
 
 }

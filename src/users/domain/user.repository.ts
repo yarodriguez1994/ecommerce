@@ -1,4 +1,3 @@
-import { ObjectId } from "mongoose"
 import { UpdateUserInput } from "../infrastructure/dto/inputs/update-user.input"
 import { UserEntity } from "./user.entity"
 

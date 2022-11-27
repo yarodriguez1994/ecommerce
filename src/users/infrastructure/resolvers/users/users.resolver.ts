@@ -11,11 +11,9 @@ import { UsersAll, UserOne, DeleteUserService } from '../../../application/index
 
 @Resolver(() => User)
 export class UsersResolver {
-  
-  // private pubSub = new PubSub();
 
   constructor(
-    @Inject('PUB_SUB') private readonly pubService,
+    @Inject('PUB_SUB') private readonly pubSub,
     private readonly usersService: UsersService,
     private readonly usersAll: UsersAll,
     private readonly userOne: UserOne,
@@ -72,12 +70,11 @@ export class UsersResolver {
 
   @Subscription((returns) => User ,{
     name:'UserAdded',
-    filter : (payload) => payload,
+    // resolve : value => value.id
+    filter : (payload) => payload.UserAdded.uuid,
   }) 
   eventUserCreated(){
-    // return this.pubSub.asyncIterator('UserAdded');
-    return this.pubService.asyncIterator('UserAdded');
-
+    return this.pubSub.asyncIterator('UserAdded');
   }
 
   @Subscription((returns) => User ,{
@@ -86,8 +83,9 @@ export class UsersResolver {
   }) 
   eventDeleteUser(){
     // return this.pubSub.asyncIterator('UserAdded');
-    return this.pubService.asyncIterator('UserDeleted');
+    return this.pubSub.asyncIterator('UserDeleted');
 
   }
 
 }
+

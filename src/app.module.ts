@@ -7,7 +7,6 @@ import { join } from 'path';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PubsubModule } from './globals/infrastructure/pubsub/pubsub.module';
 
 @Module({
   imports: [
@@ -35,7 +34,6 @@ import { PubsubModule } from './globals/infrastructure/pubsub/pubsub.module';
       useUnifiedTopology: true,
       useNewUrlParser: true
     }),
-    PubsubModule,
     
   ],
   controllers: [],

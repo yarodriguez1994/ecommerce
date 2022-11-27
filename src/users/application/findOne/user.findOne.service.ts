@@ -13,7 +13,6 @@ export class UserOne{
 
     public async execute(id:string): Promise<UserEntity> {        
         const user = await this.userRepository.findOne(id);
-        console.log(user);
         if (user === null) throw new Error(`User with id ${id} does exist`);
         return user;
     }
