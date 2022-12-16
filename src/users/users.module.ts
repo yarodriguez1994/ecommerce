@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersService } from './application/create/users.create.service';
+import { UserCreateService } from './application/create/users.create.service';
 import { UsersAll } from './application/findAll/users.findAll.service';
 import { UserOne } from './application/findOne/user.findOne.service';
 import { User } from './infrastructure/entities/user.entity';
@@ -27,7 +27,7 @@ import { UserEventBus } from './infrastructure/eventBus/user.pubSub.eventBus';
       useClass: UserEventBus,
     },
     UsersResolver,
-    UsersService,
+    UserCreateService,
     UsersAll,
     UserOne,
     UserUpdateService,

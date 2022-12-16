@@ -15,7 +15,6 @@ export class UserEventBus implements EventBus {
 
 			const domainEventName = domainEvent.name;
 			const domainEventAttributes = domainEvent.attributes;
-			console.log(domainEventName);
 			await this.pubSub.publish(domainEventName, {domainEventName:domainEventAttributes});
 		}
 

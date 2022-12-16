@@ -1,5 +1,5 @@
 import { Injectable,Inject } from '@nestjs/common';
-import { UserEntity } from 'src/users/domain/user.entity';
+import { UserEntity, UserPrimitives } from 'src/users/domain/user.entity';
 import { UserRepository } from 'src/users/domain/user.repository';
 
 @Injectable()
@@ -9,8 +9,11 @@ export class UsersAll {
         private readonly userRepository:UserRepository
     ){}
 
-    public async execute(): Promise<UserEntity[]> {        
-        return await this.userRepository.findAll();
+    public async execute(): Promise<UserPrimitives[]> {        
+        const allUSersEntity =  await this.userRepository.findAll();
+        const usersResponse = allUSersEntity.map((user) => user.toResponse());
+        return usersResponse;
+
     }
 
 }

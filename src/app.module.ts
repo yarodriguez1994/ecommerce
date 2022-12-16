@@ -28,7 +28,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       type: 'mongodb',
       url: process.env.MONGODBHOST,
       database: process.env.MONGODB_DATABASE,
-      port:27018,
+      port:27017,
       entities: [ __dirname + '/**/*.entity{.ts,.js}',],
       synchronize: true,
       useUnifiedTopology: true,

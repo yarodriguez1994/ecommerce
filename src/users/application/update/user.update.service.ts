@@ -10,7 +10,6 @@ export class UserUpdateService{
     constructor(
         @Inject('IUserRepository') private readonly userRepository:UserRepository,
         @Inject('PUB_SUB') private readonly pubSub,
-        
 
     ){}
 

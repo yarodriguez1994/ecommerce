@@ -16,14 +16,16 @@ describe('Mutacion create new user', () => {
     
         app = moduleFixture.createNestApplication();
         await app.init();
-      });
+    });
 
       afterEach(async () => {
         await app.close();
       });  
 
-               
-      const mutationCreateUser = () => `mutation CreateUser($createUserInput: CreateUserInput!) {
+        
+      it('Should create a new user', async () => {
+
+        const mutationCreateUser = () => `mutation CreateUser($createUserInput: CreateUserInput!) {
           createUser(createUserInput: $createUserInput) {
             id
             firstname
@@ -44,9 +46,6 @@ describe('Mutacion create new user', () => {
             "password": "123456"
           }
         }
-          
-        
-      it('Should create a new user', async () => {
     
           return await request(app.getHttpServer())    
               .post('/graphql')

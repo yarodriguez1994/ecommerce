@@ -3,19 +3,19 @@
 # ------------------------------------------------------
 
 type User {
-  id: String!
+  id: String
   uuid: String!
   firstname: String!
   lastname: String
   email: String!
   password: String!
   gender: String!
+  status: String!
 }
 
 type Query {
   allUsers: [User!]!
   findOne(id: String!): User!
-  findByEmail(email: String!): User!
 }
 
 type Mutation {

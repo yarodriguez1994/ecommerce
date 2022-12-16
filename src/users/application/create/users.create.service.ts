@@ -4,33 +4,53 @@ import { UserRepository } from '../../domain/user.repository';
 import { CreateUserInput } from '../../infrastructure/dto/inputs/create-user.input';
 import { EventBus } from 'src/shared/domain/event.bus';
 import { UserCreatedDomainEvent } from 'src/users/domain/user.created.domainEvent';
-import { DomainEvent } from 'src/shared/domain/domain.event';
-import { User } from 'src/users/infrastructure/entities/user.entity';
+import { UserPassword } from '../../domain/user.password';
+import { UserEMail } from 'src/users/domain/user.email';
+import { UserName } from 'src/users/domain/user.name';
+import { UserGender } from 'src/users/domain/user.gender';
+import { UserUUID } from 'src/users/domain/user.uuid';
+import { UserLastName } from 'src/users/domain/user.lastname';
+import { UserStatus } from 'src/users/domain/user.status';
 
 
 @Injectable()
-export class UsersService {
+export class UserCreateService {
+
 
   constructor(
     @Inject('IUserRepository') private readonly userRepository: UserRepository,
-    @Inject('ICreateEvent') private readonly userEventBus:EventBus
+    @Inject('ICreateEvent') private readonly userEventBus:EventBus,
   ) {}
   
-  async execute(createUserInput: CreateUserInput): Promise<UserEntity>{
+  async execute(createUserInput: CreateUserInput): Promise<Object>{
 
-    const createUser:UserEntity = UserEntity.create(
-      createUserInput.firstname,
-      createUserInput.lastname,
-      createUserInput.email,
-      createUserInput.password,
-      createUserInput.gender,
-    );
+    const uuid = UserUUID.create(null);
+    const firstName = UserName.create(createUserInput.firstname);
+    const lastName = UserLastName.create(createUserInput.lastname);
+    const password = UserPassword.create(createUserInput.password);
+    const email = UserEMail.create(createUserInput.email);
+    const gender = UserGender.create(createUserInput.gender);
+    const status = UserStatus.create('Active');
+    
+    const prospUser = {
+      uuid:uuid,
+      firstname:firstName,
+      lastname:lastName,
+      password:password,
+      email:email,
+      gender:gender,
+      status:status,
+    }
+    
+    const createUser = UserEntity.create(prospUser);
+
     await this.userRepository.save(createUser);
 
     const newUserEvent = new UserCreatedDomainEvent(createUser);
     this.userEventBus.publish([newUserEvent]);
 
-    return createUser;
+    return createUser.toResponse();
+
   }
 
 }
