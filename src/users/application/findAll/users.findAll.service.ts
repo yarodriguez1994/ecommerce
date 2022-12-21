@@ -11,7 +11,7 @@ export class UsersAll {
 
     public async execute(): Promise<UserPrimitives[]> {        
         const allUSersEntity =  await this.userRepository.findAll();
-        const usersResponse = allUSersEntity.map((user) => user.toResponse());
+        const usersResponse = allUSersEntity.map((user) => user.toPrimitives());
         return usersResponse;
 
     }

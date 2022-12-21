@@ -1,18 +1,24 @@
+import { GenerateUUID } from './uuid.generate';
 
-export class DomainEvent {
+export abstract class DomainEvent {
 
-	readonly name: string;
-	readonly attributes: object;
+    static EVENT_NAME: string;
+    readonly eventName: string;
+	abstract toPrimitives(): object;
 	readonly occurredAt: string;
+    readonly aggregateId : string;
+    readonly eventId: string;
 
 	constructor(
-        kind: string, 
-        attributes: object,
+        eventName: string, 
+        aggregateId: string,
         occurredAt?: string,
+        eventId?: string
     ){
-        this.name = kind;
-        this.attributes = attributes;
-        this.occurredAt = occurredAt;
+        this.eventName = eventName;
+        this.aggregateId = aggregateId
+        this.eventId = eventId ? eventId : new GenerateUUID().getValue();
+        this.occurredAt = occurredAt ? occurredAt : new Date().toString();
 	}
 
 }

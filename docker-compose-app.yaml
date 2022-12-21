@@ -1,0 +1,20 @@
+version : '3'
+
+services:
+  app:
+    build:
+      context: ${PWD}
+      dockerfile: dockerfile.dev
+    environment:
+      - MONGODBHOST=mongodb://localhost:27017
+      - MONGODB_DATABASE=ecommerce
+    ports:
+    - 4000:3000
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    external:
+      name: mynet
+

@@ -9,7 +9,7 @@ import { UsersResolver } from './infrastructure/resolvers/users/users.resolver';
 import { UserUpdateService } from './application/update/user.update.service';
 import { DeleteUserService } from './application';
 import { PubSub } from 'graphql-subscriptions';
-import { UserEventBus } from './infrastructure/eventBus/user.pubSub.eventBus';
+import { UserEventBus } from '../shared/bus/eventBus/user.pubSub.eventBus';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -23,7 +23,7 @@ import { UserEventBus } from './infrastructure/eventBus/user.pubSub.eventBus';
       useValue: new PubSub(),
     },
     {
-      provide :'ICreateEvent',
+      provide :'IEventBus',
       useClass: UserEventBus,
     },
     UsersResolver,

@@ -11,11 +11,12 @@ export class UserEventBus implements EventBus {
 
 	public async publish(domainEvents: DomainEvent[]) {
 
+		//console.log(domainEvents);
 		for(let domainEvent of domainEvents){
 
-			const domainEventName = domainEvent.name;
-			const domainEventAttributes = domainEvent.attributes;
-			await this.pubSub.publish(domainEventName, {domainEventName:domainEventAttributes});
+			const domainEventName = domainEvent.eventName;
+			const domainEventAttributes = domainEvent.toPrimitives();
+			await this.pubSub.publish(domainEventName,{...domainEventAttributes});
 		}
 
 	}

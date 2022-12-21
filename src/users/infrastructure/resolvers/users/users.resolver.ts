@@ -33,7 +33,7 @@ export class UsersResolver {
     @Args('id',{type: () => String } ) id:string
   ): Promise<UserPrimitives>{
     const user:UserEntity = await this.userOne.execute(id);
-    return user.toResponse();
+    return user.toPrimitives();
   }
 
   // @Query( () => User, { name: 'findByEmail' } )
@@ -69,8 +69,6 @@ export class UsersResolver {
 
   @Subscription((returns) => User ,{
     name:'UserAdded',
-    // resolve : value => value.id
-    filter : (payload) => payload.UserAdded.uuid,
   }) 
   eventUserCreated(){
     return this.pubSub.asyncIterator('UserAdded');
@@ -78,10 +76,8 @@ export class UsersResolver {
 
   @Subscription((returns) => User ,{
     name:'UserDeleted',
-    filter : (payload) => payload,
   }) 
   eventDeleteUser(){
-    // return this.pubSub.asyncIterator('UserAdded');
     return this.pubSub.asyncIterator('UserDeleted');
 
   }

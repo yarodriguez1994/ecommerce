@@ -9,5 +9,5 @@ export interface UserRepository {
     findAll(): Promise<UserEntity[]>
     update(_id:string,updateUser:UpdateUserInput): Promise<void>
     findByEmail(email:string): Promise<UserEntity>
-    delete(id:UserUUID): Promise<void>
+    delete(updateUser:UserEntity): Promise<void>
 }

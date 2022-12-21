@@ -9,11 +9,11 @@ describe('Find one user', () => {
   let repository: UserRepository;
 
     const objectUser = UserEntity.create(
-        'test user',
+        {'test user',
         'test apollo',
         'yilber@.comMM',
         '12345wdwdw6',
-        "F",
+        "F",}
     )
     
   beforeEach(async () => {

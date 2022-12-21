@@ -13,5 +13,13 @@ export class UserStatus {
     public getValue():string{
         return this.status;
     }
+
+    public toInactive(){
+        return this.status = 'Inactive';
+    }
+
+    public toActive(){
+        return this.status = 'Active';
+    }
 }
 

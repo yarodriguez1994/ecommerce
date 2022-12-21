@@ -6,6 +6,7 @@ import { UserEntity, UserPrimitives } from '../../domain/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserInput } from '../dto/inputs/update-user.input';
 import { UserUUID } from 'src/users/domain/user.uuid';
+import { exit } from 'process';
 
 @Injectable()
 export class UserRepositoryMongo implements UserRepository{
@@ -15,7 +16,7 @@ export class UserRepositoryMongo implements UserRepository{
     ){}
 
     public async save(newUser:UserEntity): Promise<void>{
-        const objectNewUser:object = newUser.toResponse()
+        const objectNewUser:object = newUser.toPrimitives()
         await this.mongoRepository.save(objectNewUser);
     }
     public async update(_id:string,updateUser:UpdateUserInput): Promise<any>{
@@ -24,23 +25,26 @@ export class UserRepositoryMongo implements UserRepository{
 
     public async findOne(id:UserUUID):Promise<UserEntity>{
         const user:any = await this.mongoRepository.findOneBy({uuid:id.getValue()});
-        return UserEntity.fromPrimitives(user);
+        return  user !== null 
+        ? UserEntity.fromPrimitives(user)
+        : null
     }
 
     public async findAll(): Promise<UserEntity[]> {
         const allUsers:any = await this.mongoRepository.find();
         const allEntityUsers = allUsers.map( (user)  => UserEntity.fromPrimitives(user));
         return allEntityUsers;
-
     }
 
     public async findByEmail(email:string): Promise<any> {
         return await this.mongoRepository.findOneBy({email:email})
     }
 
-    public async delete(id:UserUUID): Promise<any> {
-        const userInactive = await this.mongoRepository.updateOne({uuid:id.getValue()},{$set :{status:'Inactive'}});
-        // console.log(userInactive);
+    public async delete(updateUser:UserEntity): Promise<void> {
+        const newUserStatus:UserPrimitives = updateUser.toPrimitives();
+        const idUser:string = newUserStatus.uuid;
+        const newStatus:string = newUserStatus.status;
+        await this.mongoRepository.updateOne({uuid:idUser},{$set :{status:newStatus}});
     }
 
 }

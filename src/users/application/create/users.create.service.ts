@@ -3,7 +3,6 @@ import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../domain/user.repository';
 import { CreateUserInput } from '../../infrastructure/dto/inputs/create-user.input';
 import { EventBus } from 'src/shared/domain/event.bus';
-import { UserCreatedDomainEvent } from 'src/users/domain/user.created.domainEvent';
 import { UserPassword } from '../../domain/user.password';
 import { UserEMail } from 'src/users/domain/user.email';
 import { UserName } from 'src/users/domain/user.name';
@@ -16,10 +15,9 @@ import { UserStatus } from 'src/users/domain/user.status';
 @Injectable()
 export class UserCreateService {
 
-
   constructor(
     @Inject('IUserRepository') private readonly userRepository: UserRepository,
-    @Inject('ICreateEvent') private readonly userEventBus:EventBus,
+    @Inject('IEventBus') private readonly userEventBus:EventBus,
   ) {}
   
   async execute(createUserInput: CreateUserInput): Promise<Object>{
@@ -43,13 +41,10 @@ export class UserCreateService {
     }
     
     const createUser = UserEntity.create(prospUser);
-
     await this.userRepository.save(createUser);
+    this.userEventBus.publish(createUser.pullDomainEvents());
 
-    const newUserEvent = new UserCreatedDomainEvent(createUser);
-    this.userEventBus.publish([newUserEvent]);
-
-    return createUser.toResponse();
+    return createUser.toPrimitives();
 
   }
 

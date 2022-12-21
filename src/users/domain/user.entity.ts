@@ -1,3 +1,7 @@
+import { userInfo } from 'os';
+import { AggregateRoot } from 'src/shared/domain/Aggregate/aggregate.root';
+import { UserCreatedDomainEvent } from './domainEvents/user.created.domainEvent';
+import { UserDeletedDomainEvent } from './domainEvents/user.deleted.domainEvent';
 import { UserEMail } from './user.email';
 import { UserGender } from './user.gender';
 import { UserLastName } from './user.lastname';
@@ -26,7 +30,7 @@ export interface UserPrimitives {
     status:string;
 }
 
-export class UserEntity {
+export class UserEntity extends AggregateRoot{
 
     readonly uuid: UserUUID;
     readonly firstname: UserName;
@@ -38,7 +42,7 @@ export class UserEntity {
 
 
     private constructor(propsUSer:UserProps ){
-
+        super();
         this.uuid = propsUSer.uuid;
         this.firstname = propsUSer.firstname
         this.lastname = propsUSer.lastname;
@@ -49,11 +53,12 @@ export class UserEntity {
     }
 
     public static create(propsNewUser:UserProps):UserEntity{
-
-        return new UserEntity(propsNewUser);
+        const user = new UserEntity(propsNewUser);
+        user.record( new UserCreatedDomainEvent(user));
+        return user;
     }
 
-    public toResponse():UserPrimitives {
+    public toPrimitives():UserPrimitives {
 
         return { 
             uuid:this.uuid.getValue(),
@@ -91,7 +96,9 @@ export class UserEntity {
     }
 
     public delete():void {
-        this.status 
+      
+        this.status.toInactive();
+        this.record(new UserDeletedDomainEvent(this));
     }
 
 }
